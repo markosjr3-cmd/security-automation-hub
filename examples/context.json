@@ -1,0 +1,14 @@
+{
+  "indicators": [
+    {
+      "type": "ip",
+      "value": "192.0.2.10",
+      "note": "Reserved documentation address used in the lab's sign-in scenario. Review is a fixture label, not a real reputation verdict."
+    },
+    {
+      "type": "domain",
+      "value": "alerts.example.com",
+      "note": "Reserved example domain used in a synthetic investigation."
+    }
+  ]
+}

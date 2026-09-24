@@ -1,29 +1,27 @@
-# Architecture (planned)
-
-## Initial local workflow
+# Architecture: local prototype
 
 ```text
 Synthetic JSON event
        ↓
-Validate schema and normalize indicator
+Parse and validate event, normalize IP/domain
        ↓
-Enrich from local fixture or documented source
+Look for an exact match in a local synthetic fixture
        ↓
-Apply explicit triage rules
+Classify as review (match) or unknown (no match)
        ↓
-Structured result + local investigation record
+Print JSON and save local investigation record
 ```
 
-The first implementation should separate input validation, enrichment and classification so each step can be checked independently. When an indicator is invalid or context is unavailable, the result should say so instead of asserting that it is safe.
+`triage.py` uses only the Python standard library. `examples/context.json` is explicitly synthetic and contains exact indicator matches. A match is marked for review with the fixture note as evidence; no match stays unknown. The program does not connect to any external system or determine whether an indicator is malicious.
 
-## Data contract (draft)
+## Data contract
 
-The sample event in [../examples/event.json](../examples/event.json) uses an event ID, UTC timestamp, indicator type and value, event source and a short observation. The exact schema can change as the code is built; record any changes here.
+Input: JSON object with nonempty `event_id`, `source`, `observation`, timezone-aware ISO 8601 `timestamp`, and `indicator` object (`type`: `ip` or `domain`; `value`: valid IP or ASCII domain). Domains are normalized to lowercase without a trailing dot; IPs are canonicalized. Invalid input returns exit code 1 and does not write a new record.
+
+Output: normalized input fields plus `enrichment` (`matched_local_fixture` or `no_local_match`), `classification` (`review` or `unknown`), `evidence` (list of explanations), and `data_source` (`local synthetic fixture`). The output file defaults to `output/triage.json` and can be changed with `--output`.
 
 ## Later extensions
 
-- Containerized runtime and n8n orchestration after the local workflow works.
-- Rate limits, timeouts and explicit handling of API failures for optional external enrichment.
-- A simulated OT/ICS network scenario with sanitized topology and no production data.
-
-This document describes an intended design, not a deployed security service.
+- Additional fixture scenarios and explicit triage rules.
+- Optional external sources with rate limits, timeouts and failure handling.
+- Docker and n8n orchestration, followed by a simulated OT/ICS network case using sanitized topology.

@@ -1,24 +1,15 @@
 # First milestone: event triage prototype
 
-## Deliverable
+Implemented in `triage.py` using deterministic synthetic data and the Python standard library.
 
-A local command-line program reads a synthetic JSON event and writes a JSON triage result. Start with deterministic local fixtures so the program can be demonstrated without an API key.
+## Acceptance checks
 
-## Acceptance criteria
+- The sample event in `examples/event.json` returns `review` with a fixture note as evidence.
+- An unknown reserved address returns `unknown`, never `safe`.
+- A domain can be normalized and matched independently of IP addresses.
+- Invalid input fails with an error and does not write a record.
+- The CLI prints structured JSON, saves a local result, and has runnable tests.
 
-- Accepts the sample in [../examples/event.json](../examples/event.json).
-- Rejects malformed input with a clear error message.
-- Validates indicator type and value; does not confuse an IP with a domain.
-- Reports enrichment status and the evidence behind any classification.
-- Handles unknown indicators without claiming they are benign.
-- Includes a concise README command to reproduce the result and a test for valid and invalid input.
+Run `python -m unittest discover -s tests -v` to check these behaviors. Run `python triage.py examples/event.json` for a demonstration. The result represents a teaching scenario, not a live security assessment.
 
-## Suggested build order
-
-1. Define input and output schemas.
-2. Implement parsing and validation.
-3. Add a small local enrichment fixture.
-4. Add triage rules and tests.
-5. Document a real example run with synthetic data.
-
-External APIs, Docker, n8n, dashboards and OT/ICS simulations are later milestones, after this prototype is verifiable.
+Next: expand test scenarios and decide which enrichment source would add useful evidence without requiring sensitive data.
