@@ -1,0 +1,10 @@
+{
+  "event_id": "lab-002",
+  "timestamp": "2026-09-24T12:00:00Z",
+  "source": "synthetic-auth-log",
+  "indicator": {
+    "type": "ip",
+    "value": "198.51.100.8"
+  },
+  "observation": "Repeated failed sign-in attempts in a lab exercise."
+}
