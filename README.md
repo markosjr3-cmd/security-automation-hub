@@ -35,3 +35,18 @@ Add richer local scenarios and documented triage rules, then consider optional A
 Use synthetic events and reserved example addresses. Never commit credentials, tokens, customer IP ranges, packet captures from production, company code, or internal diagrams. `.gitignore` helps prevent accidental commits, but review `git status` and `git diff --staged` before pushing.
 
 Licensed under [MIT](LICENSE).
+
+## CyberLab — Security Event Monitor v0.2
+
+Workflow n8n que recebe eventos pelo webhook `POST /security-event` e identifica possíveis ataques de força bruta: pelo menos 5 falhas de login do mesmo IP em uma janela de 5 minutos, com cooldown de 15 minutos entre alertas.
+
+### Importação
+
+1. Importe [`cyberlab-security-event-monitor-v0.2-github.json`](workflows/cyberlab-security-event-monitor-v0.2-github.json) no n8n.
+2. Crie as Data Tables `security_events` e `security_alerts`, com as colunas e tipos indicados nos mapeamentos do workflow.
+3. Selecione as tabelas locais nos seguintes nodes:
+   - `Insert row` e `Get row(s)`: `security_events`.
+   - `Insert Alert` e `Check Recent Alert`: `security_alerts`.
+4. Teste o workflow antes de ativá-lo.
+
+O export foi sanitizado para publicação. Os IDs das tabelas são marcadores que precisam ser substituídos pela seleção das tabelas na instância de destino.
