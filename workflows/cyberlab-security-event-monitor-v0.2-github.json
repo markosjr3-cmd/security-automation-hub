@@ -1,0 +1,898 @@
+{
+  "name": "CyberLab",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "security-event",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "e57f5d61-71bf-4d6f-97c1-b0ac7cd31af0",
+      "name": "Webhook"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "39cf8e13-4696-4165-9908-56f3a543cf7b",
+              "leftValue": "={{ $json.body.event_type }}",
+              "rightValue": "login_failed",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        224,
+        0
+      ],
+      "id": "89428d03-689c-458e-b7bb-f32c5c0f9c3f",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "071600b6-ec3c-4684-a768-d923a59b8249",
+              "name": "timestamp",
+              "value": "={{ $json.body.timestamp }}",
+              "type": "string"
+            },
+            {
+              "id": "4f179355-8a01-4f0c-8fdc-b49a2ef10762",
+              "name": "event_type",
+              "value": "={{ $json.body.event_type }}",
+              "type": "string"
+            },
+            {
+              "id": "6be7b5e2-fac5-4a37-aeb2-fa61a2b1b070",
+              "name": "username",
+              "value": "={{ $json.body.username }}",
+              "type": "string"
+            },
+            {
+              "id": "39a6c257-5919-49b1-ba26-12a58e527d6d",
+              "name": "source_ip",
+              "value": "={{ $json.body.source_ip }}",
+              "type": "string"
+            },
+            {
+              "id": "bf7d4af9-6254-4b2b-aa8b-fdc00730bfa1",
+              "name": "severity",
+              "value": "medium",
+              "type": "string"
+            },
+            {
+              "id": "1d8b6e85-7520-49b6-a2d2-58666ec7ad30",
+              "name": "message",
+              "value": "={{ 'Failed login for user ' + $json.body.username }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        448,
+        -96
+      ],
+      "id": "001dcbd2-2b17-4cdc-96c4-a00fbdeb33c0",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "value": "REPLACE_WITH_SECURITY_EVENTS_TABLE_ID",
+          "mode": "list",
+          "cachedResultName": "security_events"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "timestamp": "={{ $json.timestamp }}",
+            "event_type": "={{ $json.event_type }}",
+            "username": "={{ $json.username }}",
+            "source_ip": "={{ $json.source_ip }}",
+            "severity": "={{ $json.severity }}",
+            "message": "={{ $json.message }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "timestamp",
+              "displayName": "timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "event_type",
+              "displayName": "event_type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "username",
+              "displayName": "username",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "source_ip",
+              "displayName": "source_ip",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "severity",
+              "displayName": "severity",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "message",
+              "displayName": "message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        672,
+        -96
+      ],
+      "id": "0ad983e0-45a3-4428-b50f-21798f658b4e",
+      "name": "Insert row"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "REPLACE_WITH_SECURITY_EVENTS_TABLE_ID",
+          "mode": "list",
+          "cachedResultName": "security_events"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "source_ip",
+              "keyValue": "={{ $json.source_ip }}"
+            },
+            {
+              "keyName": "event_type",
+              "keyValue": "login_failed"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        896,
+        -96
+      ],
+      "id": "f573fd0f-d242-409e-87e3-d3bd2cc4db0a",
+      "name": "Get row(s)"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "bcff9383-7e60-4421-8c24-90873740ec9c",
+              "leftValue": "={{ DateTime.fromISO($json.timestamp).toMillis() }}",
+              "rightValue": "={{ DateTime.now().minus({ minutes: 5 }).toMillis() }}",
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        1120,
+        -96
+      ],
+      "id": "313a7dd2-bba7-4e83-8064-9a82ce3078bb",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "destinationFieldName": "events",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        1344,
+        -96
+      ],
+      "id": "e11bd04b-a827-45db-af34-a82ebaa5534a",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "90cd5fc9-ac67-44d8-b732-139653b43e1c",
+              "name": "failure_count",
+              "value": "={{ $json.events.length}}",
+              "type": "number"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        1568,
+        -96
+      ],
+      "id": "964a9279-dd48-49fc-b6e6-3bc8692ccc48",
+      "name": "Build Correlation Result"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "df751327-1e84-430d-b5e7-5ebff635717b",
+              "leftValue": "={{ $json.failure_count }}",
+              "rightValue": 5,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1792,
+        -96
+      ],
+      "id": "d9f4c5d9-1545-47c6-a509-c2bc93cfffcf",
+      "name": "Brute Force Threshold"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4ab9f146-e54d-46cd-89ea-060e7b6529ae",
+              "name": "alert_type",
+              "value": "brute_force_suspected",
+              "type": "string"
+            },
+            {
+              "id": "84e3a12c-72fb-4075-9718-56f1c7f7fec9",
+              "name": "severity",
+              "value": "high",
+              "type": "string"
+            },
+            {
+              "id": "a3adff15-9a49-42f9-a1b4-a51fdc6ce7b1",
+              "name": "source_ip",
+              "value": "={{ $json.events[0].source_ip }}",
+              "type": "string"
+            },
+            {
+              "id": "847fc17f-a34e-4fd3-baeb-e9e9068e6a59",
+              "name": "failure_count",
+              "value": "={{ $json.failure_count }}",
+              "type": "number"
+            },
+            {
+              "id": "02ab54eb-68fa-492f-ad33-e97d9ad5bb5c",
+              "name": "window_minutes",
+              "value": "5",
+              "type": "number"
+            },
+            {
+              "id": "a06ff39f-9a46-4ba1-9f04-6bc3ffa2b4e6",
+              "name": "detected_at",
+              "value": "=  {{ $now.toISO() }}",
+              "type": "string"
+            },
+            {
+              "id": "922e8b2e-6c33-49d0-9656-ec983a3daaa5",
+              "name": "message",
+              "value": "={{ 'Possible brute force detected from IP ' + $json.events[0].source_ip + ' - ' + $json.failure_count + ' failed logins within 5 minutes' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        2016,
+        -192
+      ],
+      "id": "7d803503-0370-433b-bab8-eb285d3acec3",
+      "name": "Build Brute Force Alert"
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "value": "REPLACE_WITH_SECURITY_ALERTS_TABLE_ID",
+          "mode": "list",
+          "cachedResultName": "security_alerts"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "detected_at": "={{ $('Build Brute Force Alert').item.json.detected_at }}",
+            "alert_type": "={{ $('Build Brute Force Alert').item.json.alert_type }}",
+            "severity": "={{ $('Build Brute Force Alert').item.json.severity }}",
+            "source_ip": "={{ $('Build Brute Force Alert').item.json.source_ip }}",
+            "failure_count": "={{ $('Build Brute Force Alert').item.json.failure_count }}",
+            "window_minutes": "={{ $('Build Brute Force Alert').item.json.window_minutes }}",
+            "message": "={{ $('Build Brute Force Alert').item.json.message }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "detected_at",
+              "displayName": "detected_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "alert_type",
+              "displayName": "alert_type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "severity",
+              "displayName": "severity",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "source_ip",
+              "displayName": "source_ip",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "failure_count",
+              "displayName": "failure_count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "window_minutes",
+              "displayName": "window_minutes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "message",
+              "displayName": "message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        2912,
+        -192
+      ],
+      "id": "2af814de-6532-4fb9-8b8c-3d812b42f60e",
+      "name": "Insert Alert"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "REPLACE_WITH_SECURITY_ALERTS_TABLE_ID",
+          "mode": "list",
+          "cachedResultName": "security_alerts"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "source_ip",
+              "keyValue": "={{ $('Build Brute Force Alert').first().json.source_ip }}"
+            },
+            {
+              "keyName": "alert_type",
+              "keyValue": "={{ $('Build Brute Force Alert').first().json.alert_type }}"
+            }
+          ]
+        },
+        "limit": 1,
+        "orderBy": true
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        2240,
+        -192
+      ],
+      "id": "ffb894ee-32f2-4f53-adad-109b9d2ae745",
+      "name": "Check Recent Alert",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "e33bfb90-11aa-4f9b-9cce-4b0d75f142ef",
+              "leftValue": "={{ $now.toMillis() }}",
+              "rightValue": "={{ DateTime.fromISO($json.createdAt.trim()).plus({ minutes: 15 }).toMillis() }}",
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        2688,
+        -192
+      ],
+      "id": "4ecf6835-f14b-458a-a7fe-92b24ce4397e",
+      "name": "Alert Cooldown Expired?"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "d85ca02c-e225-4546-92a0-e1884b9ec9f1",
+              "leftValue": "={{ $json.createdAt }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        2464,
+        -192
+      ],
+      "id": "0467ec2c-8640-4d52-a837-ca259dbf45e3",
+      "name": "Previous Alert Exists?"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "7f74b64c-783e-41f8-b82a-ab2f5dce8ed8",
+              "name": "status",
+              "value": "alert_suppressed",
+              "type": "string"
+            },
+            {
+              "id": "31c8f237-adb5-4740-ab5b-3ddccd0a8865",
+              "name": "reason",
+              "value": "cooldown_active",
+              "type": "string"
+            },
+            {
+              "id": "010febca-0ef9-4025-ab43-eb9d75e6846f",
+              "name": "source_ip",
+              "value": "={{ $('Build Brute Force Alert').item.json.source_ip }}",
+              "type": "string"
+            },
+            {
+              "id": "9a256879-8e00-4b52-ab70-c1b435725069",
+              "name": "alert_type",
+              "value": "={{ $('Build Brute Force Alert').item.json.alert_type }}",
+              "type": "string"
+            },
+            {
+              "id": "07b84012-59f2-4de5-a423-c3718b84d361",
+              "name": "failure_count",
+              "value": "={{ $('Build Brute Force Alert').item.json.failure_count }}",
+              "type": "number"
+            },
+            {
+              "id": "b1719613-5634-4b4e-9fb7-5bfbb4ce7cfd",
+              "name": "suppressed_at",
+              "value": "={{ $now.toISO() }}",
+              "type": "string"
+            },
+            {
+              "id": "6e4b1aa0-f8c9-44a0-b71c-abb50ed5b8b8",
+              "name": "previous_alert_at",
+              "value": "={{ $json.createdAt }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        2960,
+        -48
+      ],
+      "id": "addee90d-7f69-46dd-9fb3-c24977309d59",
+      "name": "Build Suppression Result"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4fba7a1e-e0f7-4bea-8cd1-466db510941b",
+              "name": "status",
+              "value": "alert_created",
+              "type": "string"
+            },
+            {
+              "id": "f335929b-115c-4943-8940-718bda2fbbcf",
+              "name": "reason",
+              "value": "threshold_reached",
+              "type": "string"
+            },
+            {
+              "id": "959d8f6f-c24e-4520-8c63-acb0f687024a",
+              "name": "source_ip",
+              "value": "={{ $('Build Brute Force Alert').item.json.source_ip }}",
+              "type": "string"
+            },
+            {
+              "id": "86b87c00-62f0-4901-bd85-0ce45190c0a0",
+              "name": "alert_type",
+              "value": "={{ $('Build Brute Force Alert').item.json.alert_type }}",
+              "type": "string"
+            },
+            {
+              "id": "d3983e9c-46b6-4881-bfdc-bb81aecfbc15",
+              "name": "failure_count",
+              "value": "={{ $('Build Brute Force Alert').item.json.failure_count }}",
+              "type": "number"
+            },
+            {
+              "id": "1ba1ca52-5f6a-49eb-b46e-831ddf67cbae",
+              "name": "created_at",
+              "value": "={{ $now.toISO() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        3136,
+        -192
+      ],
+      "id": "603a60a4-ab2b-4bb1-b5f9-1f9b471c9873",
+      "name": "Build Alert Created Result"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Insert row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert row": {
+      "main": [
+        [
+          {
+            "node": "Get row(s)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s)": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Build Correlation Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Correlation Result": {
+      "main": [
+        [
+          {
+            "node": "Brute Force Threshold",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brute Force Threshold": {
+      "main": [
+        [
+          {
+            "node": "Build Brute Force Alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Brute Force Alert": {
+      "main": [
+        [
+          {
+            "node": "Check Recent Alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Recent Alert": {
+      "main": [
+        [
+          {
+            "node": "Previous Alert Exists?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Alert Cooldown Expired?": {
+      "main": [
+        [
+          {
+            "node": "Insert Alert",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build Suppression Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Previous Alert Exists?": {
+      "main": [
+        [
+          {
+            "node": "Alert Cooldown Expired?",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Insert Alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert Alert": {
+      "main": [
+        [
+          {
+            "node": "Build Alert Created Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true
+  },
+  "meta": {},
+  "nodeGroups": [],
+  "tags": []
+}
